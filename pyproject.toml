@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "python-toolkit"
+version = "0.1.0"
+description = ""
+authors = ["qingxi <1917320383@qq.com>"]
+license = "MIT License"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+
+
+[tool.poetry.group.dev.dependencies]
+pre-commit = "^3.8.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
