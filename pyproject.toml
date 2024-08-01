@@ -16,6 +16,7 @@ commitizen = "^3.28.0"
 click = "^8.1.7"
 lxml = "^5.2.2"
 xmltodict = "^0.13.0"
+uuid = "^1.30"
 
 [build-system]
 requires = ["poetry-core"]
