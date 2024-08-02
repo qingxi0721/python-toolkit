@@ -3,6 +3,7 @@ import functools
 import logging
 import os
 import sys
+from typing import Literal
 
 
 # 日志类
@@ -12,7 +13,9 @@ class Logger:
         self.logger.setLevel(logger_level)
 
     # 创建stdout/stderr处理器
-    def add_stream_handler(self, handler_type: str, handler_level: str, handler_formatter: str = "") -> logging.Handler:
+    def add_stream_handler(self, handler_type: Literal['stdout', 'stderr'],
+                           handler_level: Literal['INFO', 'DEBUG', 'ERROR', 'CRITICAL', 'WARNING'],
+                           handler_formatter: str = "") -> logging.Handler:
 
         # 格式化
         if handler_formatter == "":
@@ -40,7 +43,9 @@ class Logger:
         return handler
 
     # 创建file处理器，将日志输出到指定文件路径中
-    def add_file_handler(self, file_path: str, file_mode: str = "a", handler_level: str = "DEBUG", file_encoding: str = "UTF-8", delay: bool = False, handler_formatter: str = "") -> logging.Handler:
+    def add_file_handler(self, file_path: str, file_mode: str = "a", handler_level: str = "DEBUG",
+                         file_encoding: str = "UTF-8", delay: bool = False,
+                         handler_formatter: str = "") -> logging.Handler:
         # 没有文件的话创建文件
         if not os.path.exists(file_path):
             open(file_path, "w")
@@ -78,7 +83,7 @@ class Logger:
     def critical(self, message: str):
         self.logger.critical(message)
 
-    def warn(self, message: str):
+    def warning(self, message: str):
         self.logger.warning(message)
 
     # 创建函数打印装饰器
@@ -92,10 +97,13 @@ class Logger:
     def logging_function(self, func):
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
-            self.logger.info(f"调用函数名: {func.__name__};参数：{args};关键字参数：{kwargs}")
-            result = func(*args, **kwargs)
-            self.logger.info(f"函数{func.__name__}的结果为：{result}")
-            return result
+            try:
+                self.logger.info(f"调用函数名: {func.__name__};参数：{args};关键字参数：{kwargs}")
+                result = func(*args, **kwargs)
+                self.logger.info(f"函数{func.__name__}的结果为：{result}")
+                return result
+            except Exception as e:
+                self.logger.error(f"函数{func.__name__}抛出异常：{e}")
 
         return wrapper
 
@@ -110,16 +118,11 @@ class Logger:
     @contextlib.contextmanager
     def logging_context(self, message):
         self.info(f"进入上下文：{message}")
-        yield
-        self.info(f"退出上下文：{message}")
+        try:
+            yield
+        except Exception as e:
+            self.error(f"上下文{message}中出现异常：{e}")
+        finally:
+            self.info(f"退出上下文：{message}")
 
     # def set_interval_remover(self, interval:int,path:str)->None
-
-
-logger = Logger("INFO", "log")
-stdout_handler = logger.add_stream_handler("stdout", "DEBUG")
-file_handler = logger.add_file_handler("logging.log", file_mode="w")
-logger.info("有文件处理器")
-
-with logger.logging_context("test_function"):
-    pass
