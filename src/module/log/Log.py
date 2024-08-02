@@ -8,7 +8,12 @@ from typing import Literal
 
 # 日志类
 class Logger:
-    def __init__(self, logger_level: str, logger_name: str = ""):
+    def __init__(self, logger_level: Literal['INFO', 'DEBUG', 'ERROR', 'CRITICAL', 'WARNING'], logger_name: str = ""):
+        """初始化
+
+        Args: logger_level (Literal['INFO', 'DEBUG', 'ERROR', 'CRITICAL', 'WARNING']) : 定义日志处理器级别['INFO', 'DEBUG',
+        'ERROR', 'CRITICAL', 'WARNING'] logger_name (str, optional): 日志处理器名称. 默认 "".
+        """
         self.logger = logging.getLogger(logger_name)
         self.logger.setLevel(logger_level)
 
@@ -16,6 +21,24 @@ class Logger:
     def add_stream_handler(self, handler_type: Literal['stdout', 'stderr'],
                            handler_level: Literal['INFO', 'DEBUG', 'ERROR', 'CRITICAL', 'WARNING'],
                            handler_formatter: str = "") -> logging.Handler:
+        """创建一个stderr/stdout处理器
+
+        Args:
+            handler_type (Literal['stdout', 'stderr']): 声明一个stderr或stdout处理器
+            handler_level (Literal['INFO', 'DEBUG', 'ERROR', 'CRITICAL', 'WARNING']): 处理器级别，传入后该级别以下的日志信息不会捕获
+            handler_formatter (str, optional): 处理器输出日志格式. 默认为%(asctime)s - %(levelname)s - %(message)s，可展示信息参考：
+                                                %(asctime)s：‌显示日志记录的时间，‌格式为%Y-%m-%d %H:%M:%S。‌
+                                                %(name)s：‌显示日志记录的名称。‌
+                                                %(levelname)s：‌显示日志记录的级别。‌
+                                                %(message)s：‌显示日志记录的消息。‌
+                                                %(filename)s：‌显示产生日志的源文件名。‌
+                                                %(lineno)d：‌显示产生日志的源代码行号。‌
+        Raises:
+            ValueError: 只能传入stdout/stderr类型，其他类型抛出异常
+
+        Returns:
+            logging.Handler: 返回创建的日志处理器
+        """
 
         # 格式化
         if handler_formatter == "":
@@ -43,9 +66,23 @@ class Logger:
         return handler
 
     # 创建file处理器，将日志输出到指定文件路径中
-    def add_file_handler(self, file_path: str, file_mode: str = "a", handler_level: str = "DEBUG",
+    def add_file_handler(self, file_path: str, file_mode: str = "a", handler_level: Literal['INFO', 'DEBUG', 'ERROR', 'CRITICAL', 'WARNING'] = "DEBUG",
                          file_encoding: str = "UTF-8", delay: bool = False,
                          handler_formatter: str = "") -> logging.Handler:
+
+        """创建file处理器，将日志输出到指定文件路径中
+
+        Args:
+            file_path (str): 输出文件路径（包含文件名）
+            file_mode (str, optional): 文件读取方式（'r','w','a'等）. 默认 "a".
+            handler_level ((Literal['INFO', 'DEBUG', 'ERROR', 'CRITICAL', 'WARNING']), optional): 处理器级别，传入后该级别以下的日志信息不会捕获. 默认为 "DEBUG".
+            file_encoding (str, optional): 文件编码方式. 默认 "UTF-8".
+            delay (bool, optional): 是否延迟写入文件，不建议开启. 默认 False.
+            handler_formatter (str, optional): 处理器输出日志格式，详情参考add_stream_handler中的handler_formatter参数.
+
+        Returns:
+            logging.Handler: 返回创建的日志处理器
+        """
         # 没有文件的话创建文件
         if not os.path.exists(file_path):
             open(file_path, "w")
@@ -68,22 +105,52 @@ class Logger:
 
     # 移除处理器
     def remove_handler(self, handler: logging.Handler) -> None:
+        """移除某个处理器
+
+        Args:
+            handler (logging.Handler): 传入创建的处理器
+        """
         self.logger.removeHandler(handler)
 
     # 控制台输出日志信息
     def info(self, message: str):
+        """输出info级别日志
+
+        Args:
+            message (str): 日志信息
+        """
         self.logger.info(message)
 
     def debug(self, message: str):
+        """输出debug级别日志
+
+        Args:
+            message (str): 同info函数
+        """
         self.logger.debug(message)
 
     def error(self, message: str):
+        """输出error级别日志
+
+        Args:
+            message (str): 同info函数
+        """
         self.logger.error(message)
 
     def critical(self, message: str):
+        """输出critical级别日志
+
+        Args:
+            message (str): 同info函数
+        """
         self.logger.critical(message)
 
     def warning(self, message: str):
+        """输出waring级别日志
+
+        Args:
+            message (str): 同info函数
+        """
         self.logger.warning(message)
 
     # 创建函数打印装饰器
@@ -95,6 +162,14 @@ class Logger:
     """
 
     def logging_function(self, func):
+        """创建装饰器形式的日志收集器，以装饰器形式调用后获取被装饰整个函数中的日志信息
+
+        Args:
+            func (_type_): 被装饰函数
+
+        Returns:
+            _type_: 返回装饰器函数
+        """
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
             try:
@@ -117,6 +192,11 @@ class Logger:
 
     @contextlib.contextmanager
     def logging_context(self, message):
+        """收集上下文中的所有日志并输出
+
+        Args:
+            message (_type_): 上下文名称
+        """
         self.info(f"进入上下文：{message}")
         try:
             yield
