@@ -15,12 +15,18 @@ class DataAssert:
         return data_id
 
     # 删除数据校验
-    def delete_assert(self, assert_id: uuid.UUID) -> bool:
-        for data in self.data_assert_set:
-            if data["id"] == assert_id:
-                self.data_assert_set.remove(data)
-                return True
-        return False
+    def delete_assert(self, assert_id: uuid.UUID) -> dict[str, str]:
+        try:
+            for data in self.data_assert_set:
+                if data["id"] == assert_id:
+                    self.data_assert_set.remove(data)
+                    return data
+        except Exception as e:
+            print(f'需要删除的数据验证信息不存在:{e}')
+
+    # 清空所有数据校验
+    def clear_assert(self) -> None:
+        self.data_assert_set = []
 
     # 获取数据校验
     def get_assert(self) -> list[dict[str, str]]:
