@@ -1,0 +1,33 @@
+# 这是一个示例YAML文件
+
+# 人员信息
+person:
+  name: John Doe
+  age: 30
+  address:
+    street: 123 Main St
+    city: Anytown
+    state: CA
+    zip: 12345
+
+# 联系信息
+contact:
+  email: john.doe@example.com
+  phone: 555-555-5555
+
+# 兴趣爱好
+hobbies:
+  - Reading
+  - Traveling
+  - Cooking
+
+# 教育背景
+education:
+  - degree: Bachelor's
+    major: Computer Science
+    university: University of Example
+    year: 2010
+  - degree: Master's
+    major: Software Engineering
+    university: University of Example
+    year: 2012
