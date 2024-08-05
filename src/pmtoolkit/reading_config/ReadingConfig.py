@@ -95,7 +95,7 @@ class ReadingConfig:
         Args:
             input_file (str): 同_get_ini_
 
-        Return s:
+        Returns:
             Any: 返回字典类型
         """
         with open(input_file) as f:
