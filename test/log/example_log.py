@@ -1,4 +1,4 @@
-from src.module.log.Log import Logger
+from src.pmtoolkit.log.Log import Logger
 
 # 创建测试日志
 test_logger = Logger('DEBUG', 'test-logger')

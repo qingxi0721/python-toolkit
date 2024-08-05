@@ -1,5 +1,5 @@
-from src.module.exception.GlobalException import GlobalException
-from src.module.log.Log import Logger
+from src.pmtoolkit.exception.GlobalException import GlobalException
+from src.pmtoolkit.log.Log import Logger
 
 # 创建一个日志处理器
 exception_logger = Logger('DEBUG', 'exception_logger')

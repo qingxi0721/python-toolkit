@@ -1,5 +1,5 @@
-from src.module.log.Log import Logger
-from src.module.reading_config.ReadingConfig import ReadingConfig
+from src.pmtoolkit.log.Log import Logger
+from src.pmtoolkit.reading_config.ReadingConfig import ReadingConfig
 
 # 日志
 reading_logger = Logger('DEBUG', 'reading_logger')

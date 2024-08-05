@@ -1,5 +1,5 @@
-from src.module.data_assert.DataAssert import DataAssert
-from src.module.log.Log import Logger
+from src.pmtoolkit.data_assert.DataAssert import DataAssert
+from src.pmtoolkit.log.Log import Logger
 
 # 日志
 assert_logger = Logger('DEBUG', 'assert_logger')
