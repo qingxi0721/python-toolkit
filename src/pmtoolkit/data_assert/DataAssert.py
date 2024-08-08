@@ -76,3 +76,27 @@ class DataAssert:
 
         except Exception as e:
             print(f"数据写入失败：{e}")
+
+    def check_result(self, expected, actual, strict_type=True):
+        """检查数据并写入文件
+
+               Args:
+                   expected: 预期结果
+                   actual: 实际结果
+                   strict_type: 是否开启类型检查，默认true
+
+               Returns:
+                   result: 校验结果
+               """
+        if strict_type:
+            # 如果严格类型模式开启，则检查类型和值
+            if expected == actual and isinstance(expected, type(actual)):
+                self.add_assert('success', f'类型检查已开启，校验成功！预期结果：{expected}，实际结果：{actual}')
+            else:
+                self.add_assert('failed', f'类型检查已开启，校验失败！预期结果：{expected}，实际结果：{actual}')
+        else:
+            # 如果严格类型模式关闭，则只检查值
+            if expected == actual:
+                self.add_assert('success', f'类型检查未开启，校验成功！预期结果：{expected}，实际结果：{actual}')
+            else:
+                self.add_assert('failed', f'类型检查未开启，校验失败！预期结果：{expected}，实际结果：{actual}')
