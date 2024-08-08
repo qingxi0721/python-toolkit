@@ -3,6 +3,7 @@ import functools
 import logging
 import os
 import sys
+from logging.config import dictConfig
 from typing import Literal
 
 
@@ -66,7 +67,8 @@ class Logger:
         return handler
 
     # 创建file处理器，将日志输出到指定文件路径中
-    def add_file_handler(self, file_path: str, file_mode: str = "a", handler_level: Literal['INFO', 'DEBUG', 'ERROR', 'CRITICAL', 'WARNING'] = "DEBUG",
+    def add_file_handler(self, file_path: str, file_mode: str = "a",
+                         handler_level: Literal['INFO', 'DEBUG', 'ERROR', 'CRITICAL', 'WARNING'] = "DEBUG",
                          file_encoding: str = "UTF-8", delay: bool = False,
                          handler_formatter: str = "") -> logging.Handler:
 
@@ -161,26 +163,33 @@ class Logger:
             return 1
     """
 
-    def logging_function(self, func):
+    @staticmethod
+    def logging_function(logger):
         """创建装饰器形式的日志收集器，以装饰器形式调用后获取被装饰整个函数中的日志信息
 
         Args:
             func (_type_): 被装饰函数
+            logger(_type_): 需要哪个logger装饰函数
 
         Returns:
             _type_: 返回装饰器函数
         """
-        @functools.wraps(func)
-        def wrapper(*args, **kwargs):
-            try:
-                self.logger.info(f"调用函数名: {func.__name__};参数：{args};关键字参数：{kwargs}")
-                result = func(*args, **kwargs)
-                self.logger.info(f"函数{func.__name__}的结果为：{result}")
-                return result
-            except Exception as e:
-                self.logger.error(f"函数{func.__name__}抛出异常：{e}")
 
-        return wrapper
+        def decorator(func):
+
+            @functools.wraps(func)
+            def wrapper(*args, **kwargs):
+                try:
+                    logger.info(f"调用函数名: {func.__name__};参数：{args};关键字参数：{kwargs}")
+                    result = func(*args, **kwargs)
+                    logger.info(f"函数{func.__name__}的结果为：{result}")
+                    return result
+                except Exception as e:
+                    logger.error(f"函数{func.__name__}抛出异常：{e}")
+
+            return wrapper
+
+        return decorator
 
     # 收集上下文中所有的日志并输出
     """
@@ -190,19 +199,35 @@ class Logger:
             pass
     """
 
+    @staticmethod
     @contextlib.contextmanager
-    def logging_context(self, message):
+    def logging_context(logger, message):
         """收集上下文中的所有日志并输出
 
         Args:
             message (_type_): 上下文名称
+            logger:需要哪个logger执行
         """
-        self.info(f"进入上下文：{message}")
+        logger.info(f"进入上下文：{message}")
         try:
             yield
         except Exception as e:
-            self.error(f"上下文{message}中出现异常：{e}")
+            logger.error(f"上下文{message}中出现异常：{e}")
         finally:
-            self.info(f"退出上下文：{message}")
+            logger.info(f"退出上下文：{message}")
 
+    # 读取字典配置创建日志
+    @staticmethod
+    def dict_config(config):
+        """根据.yaml或.json配置文件生成日志处理器
+
+               Args:
+                   config (_type_): 配置文件
+
+               """
+        dictConfig(config)
+
+    @staticmethod
+    def get_logger(logger_name: str):
+        return logging.getLogger(logger_name)
     # def set_interval_remover(self, interval:int,path:str)->None
