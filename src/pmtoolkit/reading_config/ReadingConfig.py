@@ -8,7 +8,7 @@ import yaml
 
 
 class ReadingConfig:
-    def get(self, input_file: str) -> None:
+    def get(self, input_file: str) -> Any:
         """获取config文件内容
 
         Args:
