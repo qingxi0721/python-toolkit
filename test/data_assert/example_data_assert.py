@@ -11,7 +11,6 @@ data_assert = DataAssert()
 
 @assert_logger.logging_function
 def test_data_assert(input_password: str):
-
     # 添加数据校验
     if input_password == '<PASSWORD>':
         success_id = data_assert.add_assert('success', f'输入值：{input_password},校验成功')
@@ -26,11 +25,22 @@ def test_data_assert(input_password: str):
     assert_logger.info(str(data_assert.get_assert()))
 
 
-test_data_assert(input_password='<PASSWORD>')
+test_data_assert('<PASSWORD>')
 # 数据校验写入指定路径文件
 data_assert.write_assert_file('data_success.json')
 # 清空所有数据校验
 data_assert.clear_assert()
 
-test_data_assert(input_password='PASSWORD')
+test_data_assert('PASSWORD')
 data_assert.write_assert_file('data_fail.json')
+
+# 数据校验示例
+# print(data_assert.check_result(1, 1))  # True
+# print(data_assert.check_result(1, 1, strict_type=False))  # True
+# print(data_assert.check_result(1, '1'))  # False
+# print(data_assert.check_result(1, '1', strict_type=False))  # True
+# print(data_assert.check_result([1, 2, 3], [1, 2, 3]))  # True
+# print(data_assert.check_result([1, 2, 3], (1, 2, 3)))  # False
+# print(data_assert.check_result([1, 2, 3], (1, 2, 3), strict_type=False))
+#
+# print(data_assert.get_assert())
