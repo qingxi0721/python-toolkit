@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pmtoolkit"
-version = "1.0.3"
+version = "1.0.6"
 description = ""
 authors = ["qingxi <1917320383@qq.com>"]
 license = "MIT License"
@@ -12,6 +12,10 @@ build = "^1.2.1"
 xmltodict = "^0.13.0"
 pyyaml = "6.0.1"
 uuid = "^1.30"
+uiautomation = "^2.0.20"
+setuptools = "^72.1.0"
+openpyxl = "^3.1.5"
+xlrd = "^2.0.1"
 
 [tool.poetry.group.dev.dependencies]
 pre-commit = "^3.8.0"
