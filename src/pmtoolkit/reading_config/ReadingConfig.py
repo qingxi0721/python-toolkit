@@ -1,8 +1,11 @@
 import configparser
+import csv
 import json
 import os
-from typing import Any
+from typing import Any, Literal
 
+import openpyxl
+import xlrd
 import xmltodict
 import yaml
 
@@ -41,8 +44,29 @@ class ReadingConfig:
             # 读取xml
             elif file_type == 'xml':
                 return self._get_xml(input_file)
+
+            # 读取xlsx
+            elif file_type == 'xlsx':
+                return self._get_xlsx_to_dict(input_file)
+
             else:
                 raise ValueError(f"Unsupported file type: {file_type}")
+
+    def get_xlsx(self, input_file: str, return_type: Literal['dict', 'array'], header=None) -> Any:
+        if return_type == 'dict':
+            return self._get_xlsx_to_dict(input_file, header)
+        elif return_type == 'array':
+            return self._get_xlsx_to_array(input_file, header)
+        else:
+            raise ValueError(f"Unsupported return type: {return_type}")
+
+    def get_csv(self, input_file: str, return_type: Literal['dict', 'array'], header=None) -> Any:
+        if return_type == 'dict':
+            return self._get_csv_to_dict(input_file)
+        elif return_type == 'array':
+            return self._get_csv_to_array(input_file, header)
+        else:
+            raise ValueError(f"Unsupported return type: {return_type}")
 
     @staticmethod
     def _get_ini(input_file: str) -> Any:
@@ -100,3 +124,66 @@ class ReadingConfig:
         """
         with open(input_file) as f:
             return xmltodict.parse(f.read())
+
+    @staticmethod
+    def _get_xlsx_to_array(input_file: str, header=1) -> Any:
+        def convert_to_array(excel_data: Any) -> Any:
+            result = []
+            for row_index, row in enumerate(excel_data.iter_rows(min_row=header + 1)):
+                row_data = [cell.value for cell in row]
+                result.append(row_data)
+            return result
+
+        file_type = input_file.split('.')[-1]
+        if file_type == 'xlsx':
+            workbook = openpyxl.load_workbook(input_file)
+            sheet = workbook.active
+            return convert_to_array(sheet)
+
+        elif file_type == 'xls':
+            workbook = xlrd.open_workbook(input_file)
+            sheet = workbook.sheet_by_index(0)
+            return convert_to_array(sheet)
+        else:
+            raise ValueError(f"Unsupported file type: {file_type}")
+
+    @staticmethod
+    def _get_xlsx_to_dict(input_file: str, header=1) -> Any:
+        def convert_to_dict(excel_data: Any) -> list:
+            result = []
+            headers = [cell.value for cell in excel_data[header]]
+            for row in excel_data.iter_rows(min_row=header + 1):
+                row_data = [cell.value for cell in row]
+                result.append(dict(zip(headers, row_data)))
+            return result
+
+        file_type = input_file.split('.')[-1]
+        if file_type == 'xlsx':
+            workbook = openpyxl.load_workbook(input_file)
+            sheet = workbook.active
+            return convert_to_dict(sheet)
+
+        elif file_type == 'xls':
+            workbook = xlrd.open_workbook(input_file)
+            sheet = workbook.sheet_by_index(0)
+            return convert_to_dict(sheet)
+        else:
+            raise ValueError(f"Unsupported file type: {file_type}")
+
+    @staticmethod
+    def _get_csv_to_dict(input_file: str) -> Any:
+        with open(input_file, mode='r', newline='', encoding='utf-8') as file:
+            reader = csv.DictReader(file)
+            data = [row for row in reader]
+        return data
+
+    @staticmethod
+    def _get_csv_to_array(input_file: str, header=1) -> Any:
+        with open(input_file, mode='r', newline='', encoding='utf-8') as file:
+            reader = csv.reader(file)
+            result = []
+            for row_index, row in enumerate(reader):
+                if row_index + 1 == header:
+                    continue
+                result.append(row)
+        return result
